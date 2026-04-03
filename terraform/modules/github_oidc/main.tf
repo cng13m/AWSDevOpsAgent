@@ -2,6 +2,7 @@ locals {
   repo_full_name = "${var.github_org}/${var.github_repo}"
   branch_sub     = "repo:${local.repo_full_name}:ref:refs/heads/${var.github_default_branch}"
   pr_sub         = "repo:${local.repo_full_name}:pull_request"
+  env_sub        = "repo:${local.repo_full_name}:environment:${var.environment}"
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
@@ -31,7 +32,7 @@ data "aws_iam_policy_document" "terraform_assume" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [local.branch_sub, local.pr_sub]
+      values   = [local.branch_sub, local.pr_sub, local.env_sub]
     }
   }
 }
@@ -55,7 +56,7 @@ data "aws_iam_policy_document" "deploy_assume" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [local.branch_sub]
+      values   = [local.branch_sub, local.env_sub]
     }
   }
 }
@@ -196,4 +197,3 @@ resource "aws_iam_role_policy" "readonly_extra" {
     }]
   })
 }
-
