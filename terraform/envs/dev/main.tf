@@ -138,3 +138,5 @@ module "github_oidc" {
   task_role_arn               = module.ecs_service.task_role_arn
   common_tags                 = local.common_tags
 }
+
+## GGWP
