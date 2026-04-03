@@ -26,7 +26,7 @@ jobs:
       TARGET_ENV: dev
       IMAGE_TAG: ${{ github.event.inputs.image_tag || github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Smoke check app files
         run: |
@@ -34,11 +34,11 @@ jobs:
           test -f app/nginx.conf
           test -f app/public/index.html
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v3.1.2
         with:
           terraform_version: 1.14.0
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: ${{ vars.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_DEPLOY }}
