@@ -90,28 +90,35 @@ resource "aws_iam_role_policy" "terraform_iam" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "iam:CreateRole",
-        "iam:DeleteRole",
-        "iam:UpdateAssumeRolePolicy",
-        "iam:PutRolePolicy",
-        "iam:DeleteRolePolicy",
-        "iam:AttachRolePolicy",
-        "iam:DetachRolePolicy",
-        "iam:PassRole",
-        "iam:GetRole",
-        "iam:TagRole",
-        "iam:CreateOpenIDConnectProvider",
-        "iam:DeleteOpenIDConnectProvider",
-        "iam:UpdateOpenIDConnectProviderThumbprint",
-        "iam:GetOpenIDConnectProvider",
-        "iam:AddClientIDToOpenIDConnectProvider",
-        "iam:RemoveClientIDFromOpenIDConnectProvider"
-      ]
-      Resource = "*"
-    }]
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:UpdateAssumeRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:PassRole",
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListInstanceProfilesForRole",
+          "iam:TagRole",
+          "iam:UntagRole",
+          "iam:CreateOpenIDConnectProvider",
+          "iam:DeleteOpenIDConnectProvider",
+          "iam:UpdateOpenIDConnectProviderThumbprint",
+          "iam:GetOpenIDConnectProvider",
+          "iam:AddClientIDToOpenIDConnectProvider",
+          "iam:RemoveClientIDFromOpenIDConnectProvider"
+        ]
+        Resource = "*"
+      }
+    ]
   })
 }
 
