@@ -115,12 +115,12 @@ resource "aws_lb_target_group" "this" {
 
   health_check {
     enabled             = true
-    path                = var.health_check_path
-    healthy_threshold   = 2
-    unhealthy_threshold = 3
-    timeout             = 5
-    interval            = 30
-    matcher             = "200-399"
+    path                = var.health_check.path
+    healthy_threshold   = var.health_check.healthy_threshold
+    unhealthy_threshold = var.health_check.unhealthy_threshold
+    timeout             = var.health_check.timeout
+    interval            = var.health_check.interval
+    matcher             = var.health_check.matcher
   }
 
   tags = var.common_tags
@@ -184,7 +184,7 @@ resource "aws_ecs_service" "this" {
   desired_count                     = var.desired_count
   launch_type                       = "FARGATE"
   enable_execute_command            = true
-  health_check_grace_period_seconds = 60
+  health_check_grace_period_seconds = var.health_check.grace_period
   wait_for_steady_state             = false
 
   deployment_circuit_breaker {
@@ -232,7 +232,7 @@ resource "aws_appautoscaling_policy" "cpu" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value = 60
+    target_value = var.autoscaling_targets.cpu
   }
 }
 
@@ -247,7 +247,6 @@ resource "aws_appautoscaling_policy" "memory" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageMemoryUtilization"
     }
-    target_value = 70
+    target_value = var.autoscaling_targets.memory
   }
 }
-

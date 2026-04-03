@@ -56,7 +56,7 @@ resource "aws_iam_role_policy_attachment" "rds_monitoring" {
 resource "aws_db_instance" "this" {
   identifier                      = "${var.project_name}-${var.environment}"
   engine                          = "postgres"
-  engine_version                  = "16.3"
+  engine_version                  = var.engine_version
   instance_class                  = var.instance_class
   allocated_storage               = var.allocated_storage
   max_allocated_storage           = var.max_allocated_storage
@@ -75,13 +75,12 @@ resource "aws_db_instance" "this" {
   storage_encrypted               = true
   publicly_accessible             = false
   auto_minor_version_upgrade      = true
-  backup_window                   = "03:00-04:00"
-  maintenance_window              = "sun:04:00-sun:05:00"
-  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
-  apply_immediately               = false
+  backup_window                   = var.backup_window
+  maintenance_window              = var.maintenance_window
+  enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
+  apply_immediately               = var.apply_immediately
 
   tags = merge(var.common_tags, { Name = "${var.project_name}-${var.environment}-postgres" })
 
   depends_on = [aws_secretsmanager_secret_version.db]
 }
-

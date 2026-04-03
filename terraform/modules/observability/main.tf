@@ -99,7 +99,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
   namespace           = "AWS/ApplicationELB"
   period              = 60
   statistic           = "Sum"
-  threshold           = 5
+  threshold           = var.alarm_thresholds.alb_target_5xx_count
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -132,7 +132,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
   namespace           = "AWS/ECS"
   period              = 60
   statistic           = "Average"
-  threshold           = 80
+  threshold           = var.alarm_thresholds.ecs_cpu_high
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -149,7 +149,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_memory_high" {
   namespace           = "AWS/ECS"
   period              = 60
   statistic           = "Average"
-  threshold           = 85
+  threshold           = var.alarm_thresholds.ecs_memory_high
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -166,7 +166,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_running_task_count_low" {
   namespace           = "ECS/ContainerInsights"
   period              = 60
   statistic           = "Average"
-  threshold           = 1
+  threshold           = var.alarm_thresholds.ecs_running_task_count
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -183,7 +183,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_cpu_high" {
   namespace           = "AWS/RDS"
   period              = 60
   statistic           = "Average"
-  threshold           = 80
+  threshold           = var.alarm_thresholds.rds_cpu_high
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -199,7 +199,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_storage_low" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Average"
-  threshold           = var.rds_free_storage_threshold_bytes
+  threshold           = var.alarm_thresholds.rds_free_storage_bytes
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -215,7 +215,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_connections_high" {
   namespace           = "AWS/RDS"
   period              = 60
   statistic           = "Average"
-  threshold           = 100
+  threshold           = var.alarm_thresholds.rds_connections_high
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {

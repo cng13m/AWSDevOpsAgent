@@ -12,5 +12,9 @@ variable "deletion_protection" { type = bool }
 variable "multi_az" { type = bool }
 variable "performance_insights_enabled" { type = bool }
 variable "monitoring_interval" { type = number }
+variable "engine_version" { type = string }
+variable "backup_window" { type = string }
+variable "maintenance_window" { type = string }
+variable "enabled_cloudwatch_logs_exports" { type = list(string) }
+variable "apply_immediately" { type = bool }
 variable "common_tags" { type = map(string) }
-

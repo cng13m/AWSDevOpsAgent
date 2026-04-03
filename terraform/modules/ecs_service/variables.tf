@@ -13,11 +13,26 @@ variable "memory" { type = number }
 variable "desired_count" { type = number }
 variable "min_capacity" { type = number }
 variable "max_capacity" { type = number }
-variable "health_check_path" { type = string }
+variable "health_check" {
+  type = object({
+    path                = string
+    healthy_threshold   = number
+    unhealthy_threshold = number
+    timeout             = number
+    interval            = number
+    matcher             = string
+    grace_period        = number
+  })
+}
+variable "autoscaling_targets" {
+  type = object({
+    cpu    = number
+    memory = number
+  })
+}
 variable "log_retention_days" { type = number }
 variable "alb_logs_bucket_name" { type = string }
 variable "environment_variables" { type = map(string) }
 variable "secret_arns" { type = map(string) }
 variable "ssm_parameter_arns" { type = map(string) }
 variable "common_tags" { type = map(string) }
-

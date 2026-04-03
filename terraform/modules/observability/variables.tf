@@ -7,5 +7,15 @@ variable "target_group_arn_suffix" { type = string }
 variable "cluster_name" { type = string }
 variable "service_name" { type = string }
 variable "db_identifier" { type = string }
-variable "rds_free_storage_threshold_bytes" { type = number }
+variable "alarm_thresholds" {
+  type = object({
+    alb_target_5xx_count   = number
+    ecs_cpu_high           = number
+    ecs_memory_high        = number
+    ecs_running_task_count = number
+    rds_cpu_high           = number
+    rds_connections_high   = number
+    rds_free_storage_bytes = number
+  })
+}
 variable "common_tags" { type = map(string) }
