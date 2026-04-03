@@ -105,16 +105,17 @@ module "ecs_service" {
 module "observability" {
   source = "../../modules/observability"
 
-  project_name            = var.project_name
-  environment             = var.environment
-  aws_region              = var.aws_region
-  alarm_email             = var.alarm_email
-  alb_arn_suffix          = module.ecs_service.alb_arn_suffix
-  target_group_arn_suffix = module.ecs_service.target_group_arn_suffix
-  cluster_name            = module.ecs_service.cluster_name
-  service_name            = module.ecs_service.service_name
-  db_identifier           = module.rds.db_identifier
-  common_tags             = local.common_tags
+  project_name                     = var.project_name
+  environment                      = var.environment
+  aws_region                       = var.aws_region
+  alarm_email                      = var.alarm_email
+  alb_arn_suffix                   = module.ecs_service.alb_arn_suffix
+  target_group_arn_suffix          = module.ecs_service.target_group_arn_suffix
+  cluster_name                     = module.ecs_service.cluster_name
+  service_name                     = module.ecs_service.service_name
+  db_identifier                    = module.rds.db_identifier
+  rds_free_storage_threshold_bytes = var.rds_free_storage_threshold_bytes
+  common_tags                      = local.common_tags
 }
 
 module "github_oidc" {
@@ -129,4 +130,3 @@ module "github_oidc" {
   task_role_arn           = module.ecs_service.task_role_arn
   common_tags             = local.common_tags
 }
-

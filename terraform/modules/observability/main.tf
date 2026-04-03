@@ -199,7 +199,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_storage_low" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Average"
-  threshold           = 21474836480
+  threshold           = var.rds_free_storage_threshold_bytes
   alarm_actions       = [aws_sns_topic.alerts.arn]
 
   dimensions = {
@@ -222,4 +222,3 @@ resource "aws_cloudwatch_metric_alarm" "rds_connections_high" {
     DBInstanceIdentifier = var.db_identifier
   }
 }
-

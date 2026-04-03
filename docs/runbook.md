@@ -4,17 +4,15 @@
 
 1. Apply `terraform/bootstrap/state-backend`.
 2. Record the output bucket and DynamoDB table names.
-3. Update local/backend config for `terraform/envs/dev` and `terraform/envs/prod`.
+3. Update local/backend config for `terraform/envs/dev`.
 4. Apply `dev`.
 5. Verify alarms, logs, ECS service health, and RDS connectivity.
-6. Apply `prod` only after GitHub environment protections are configured.
 
 ## GitHub Setup
 
 Create GitHub environment(s):
 
 - `dev`
-- `prod` with required reviewers
 
 Create repository variables:
 
@@ -27,7 +25,6 @@ Create repository or environment secrets:
 - `AWS_ROLE_TERRAFORM`
 - `AWS_ROLE_DEPLOY`
 - `AWS_ROLE_READONLY`
-- `ALARM_EMAIL`
 
 ## Local Terraform Workflow
 
@@ -55,4 +52,3 @@ The scheduled GitHub Actions drift workflow runs `terraform plan -detailed-exitc
 - Exit code `0`: no drift
 - Exit code `2`: drift or unapplied change detected
 - Exit code `1`: workflow failure
-

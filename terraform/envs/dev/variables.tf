@@ -30,7 +30,7 @@ variable "db_deletion_protection" { type = bool }
 variable "db_multi_az" { type = bool }
 variable "db_performance_insights_enabled" { type = bool }
 variable "db_monitoring_interval" { type = number }
+variable "rds_free_storage_threshold_bytes" { type = number }
 variable "log_retention_days" { type = number }
 variable "flow_log_retention_days" { type = number }
 variable "app_config" { type = map(string) }
-

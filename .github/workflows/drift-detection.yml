@@ -12,9 +12,6 @@ permissions:
 jobs:
   drift:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [dev, prod]
     steps:
       - uses: actions/checkout@v4
 
@@ -29,23 +26,23 @@ jobs:
 
       - name: Terraform init
         run: >
-          terraform -chdir=terraform/envs/${{ matrix.environment }} init
+          terraform -chdir=terraform/envs/dev init
           -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
           -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
           -backend-config="region=${{ vars.AWS_REGION }}"
-          -backend-config="key=${{ matrix.environment }}/terraform.tfstate"
+          -backend-config="key=dev/terraform.tfstate"
 
       - name: Terraform drift plan
         shell: bash
         run: |
           set +e
-          terraform -chdir=terraform/envs/${{ matrix.environment }} plan -detailed-exitcode -no-color -input=false
+          terraform -chdir=terraform/envs/dev plan -detailed-exitcode -no-color -input=false
           EXIT_CODE=$?
           if [ "$EXIT_CODE" -eq 1 ]; then
             exit 1
           fi
           if [ "$EXIT_CODE" -eq 2 ]; then
-            echo "Drift detected for ${{ matrix.environment }}"
+            echo "Drift detected for dev"
           else
-            echo "No drift for ${{ matrix.environment }}"
+            echo "No drift for dev"
           fi

@@ -9,14 +9,6 @@ on:
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
     inputs:
-      environment:
-        description: "Target environment"
-        required: true
-        default: "dev"
-        type: choice
-        options:
-          - dev
-          - prod
       image_tag:
         description: "Optional image tag override"
         required: false
@@ -29,9 +21,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'dev' }}
+    environment: dev
     env:
-      TARGET_ENV: ${{ github.event.inputs.environment || 'dev' }}
+      TARGET_ENV: dev
       IMAGE_TAG: ${{ github.event.inputs.image_tag || github.sha }}
     steps:
       - uses: actions/checkout@v4

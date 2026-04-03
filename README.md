@@ -19,7 +19,6 @@ app/                       Minimal sample web app container
 docs/                      Runbooks and operator notes
 terraform/bootstrap/       One-time state backend bootstrap
 terraform/envs/dev/        Dev environment root stack
-terraform/envs/prod/       Prod environment root stack
 terraform/modules/         Reusable Terraform modules
 ```
 
@@ -32,7 +31,6 @@ terraform/modules/         Reusable Terraform modules
 2. Copy the generated bucket and table names into the backend config you use locally or in GitHub Actions.
 3. Review and update:
    - `terraform/envs/dev/terraform.tfvars`
-   - `terraform/envs/prod/terraform.tfvars`
 4. Deploy an environment:
    - `terraform -chdir=terraform/envs/dev init -backend-config="bucket=..." -backend-config="dynamodb_table=..." -backend-config="region=..." -backend-config="key=dev/terraform.tfstate"`
    - `terraform -chdir=terraform/envs/dev apply`
@@ -43,4 +41,3 @@ terraform/modules/         Reusable Terraform modules
 - The sample app under `app/` is intentionally minimal so CI/CD has a working container target.
 - `terraform/envs/*/terraform.tfvars` contain placeholders and should be updated before first apply.
 - The bootstrap stack uses local state initially because it creates the remote backend used by the other stacks.
-
