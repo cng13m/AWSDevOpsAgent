@@ -13,6 +13,13 @@ It is intentionally separate from the app infrastructure stack so you can test A
 - An Agent Space
 - A primary AWS account association for the current account in `monitor` mode
 
+## What It Is Used For
+
+- Investigating AWS alarms and incidents in the `dev` environment
+- Inspecting logs, metrics, topology, and recent infrastructure state in AWS
+- Detecting when expected CI/CD context is missing, such as no connected GitHub pipeline source
+- Providing AWS-side operational checks separate from Terraform and GitHub Actions
+
 ## What It Does Not Create
 
 - GitHub app registration inside AWS DevOps Agent
