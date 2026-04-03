@@ -52,3 +52,5 @@ The scheduled GitHub Actions drift workflow runs `terraform plan -detailed-exitc
 - Exit code `0`: no drift
 - Exit code `2`: drift or unapplied change detected
 - Exit code `1`: workflow failure
+
+> PR workflow test note
