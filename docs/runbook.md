@@ -26,6 +26,19 @@ Create repository or environment secrets:
 - `AWS_ROLE_DEPLOY`
 - `AWS_ROLE_READONLY`
 
+## GitHub Operating Flow
+
+Use a PR-first workflow for infrastructure changes:
+
+1. Create a branch from `main`
+2. Push the branch
+3. Open a pull request into `main`
+4. Wait for the Terraform PR check to complete
+5. Merge only after the plan looks correct
+6. Let the merge to `main` trigger the real `dev` apply
+
+App changes under `app/` are deployed through the `deploy-app` workflow after merge to `main`.
+
 ## Local Terraform Workflow
 
 ```powershell
@@ -52,5 +65,3 @@ The scheduled GitHub Actions drift workflow runs `terraform plan -detailed-exitc
 - Exit code `0`: no drift
 - Exit code `2`: drift or unapplied change detected
 - Exit code `1`: workflow failure
-
-> PR workflow test note
