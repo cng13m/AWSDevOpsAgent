@@ -1,0 +1,23 @@
+variable "project_name" { type = string }
+variable "environment" { type = string }
+variable "vpc_id" { type = string }
+variable "public_subnet_ids" { type = list(string) }
+variable "private_subnet_ids" { type = list(string) }
+variable "alb_security_group_id" { type = string }
+variable "ecs_security_group_id" { type = string }
+variable "ecr_repository_url" { type = string }
+variable "image_tag" { type = string }
+variable "container_port" { type = number }
+variable "cpu" { type = number }
+variable "memory" { type = number }
+variable "desired_count" { type = number }
+variable "min_capacity" { type = number }
+variable "max_capacity" { type = number }
+variable "health_check_path" { type = string }
+variable "log_retention_days" { type = number }
+variable "alb_logs_bucket_name" { type = string }
+variable "environment_variables" { type = map(string) }
+variable "secret_arns" { type = map(string) }
+variable "ssm_parameter_arns" { type = map(string) }
+variable "common_tags" { type = map(string) }
+

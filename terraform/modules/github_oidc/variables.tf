@@ -1,0 +1,9 @@
+variable "project_name" { type = string }
+variable "environment" { type = string }
+variable "github_org" { type = string }
+variable "github_repo" { type = string }
+variable "github_default_branch" { type = string }
+variable "task_execution_role_arn" { type = string }
+variable "task_role_arn" { type = string }
+variable "common_tags" { type = map(string) }
+

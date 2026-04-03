@@ -1,0 +1,101 @@
+name: deploy-app
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
+      image_tag:
+        description: "Optional image tag override"
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    env:
+      TARGET_ENV: ${{ github.event.inputs.environment || 'dev' }}
+      IMAGE_TAG: ${{ github.event.inputs.image_tag || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Smoke check app files
+        run: |
+          test -f app/Dockerfile
+          test -f app/nginx.conf
+          test -f app/public/index.html
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.0
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_DEPLOY }}
+
+      - name: Init Terraform to read outputs
+        run: >
+          terraform -chdir=terraform/envs/${{ env.TARGET_ENV }} init
+          -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+          -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
+          -backend-config="region=${{ vars.AWS_REGION }}"
+          -backend-config="key=${{ env.TARGET_ENV }}/terraform.tfstate"
+
+      - name: Resolve infrastructure outputs
+        id: infra
+        shell: bash
+        run: |
+          echo "repo_url=$(terraform -chdir=terraform/envs/${TARGET_ENV} output -raw ecr_repository_url)" >> "$GITHUB_OUTPUT"
+          echo "cluster_name=$(terraform -chdir=terraform/envs/${TARGET_ENV} output -raw ecs_cluster_name)" >> "$GITHUB_OUTPUT"
+          echo "service_name=$(terraform -chdir=terraform/envs/${TARGET_ENV} output -raw ecs_service_name)" >> "$GITHUB_OUTPUT"
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build image
+        run: docker build -t ${{ steps.infra.outputs.repo_url }}:${{ env.IMAGE_TAG }} ./app
+
+      - name: Push image
+        run: docker push ${{ steps.infra.outputs.repo_url }}:${{ env.IMAGE_TAG }}
+
+      - name: Register task definition revision and update service
+        shell: bash
+        run: |
+          CURRENT_TASK_DEF_ARN=$(aws ecs describe-services \
+            --cluster "${{ steps.infra.outputs.cluster_name }}" \
+            --services "${{ steps.infra.outputs.service_name }}" \
+            --query "services[0].taskDefinition" \
+            --output text)
+          aws ecs describe-task-definition \
+            --task-definition "$CURRENT_TASK_DEF_ARN" \
+            --query "taskDefinition" \
+            > taskdef.json
+          jq --arg IMAGE "${{ steps.infra.outputs.repo_url }}:${IMAGE_TAG}" '
+            del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy) |
+            .containerDefinitions[0].image = $IMAGE
+          ' taskdef.json > taskdef-updated.json
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://taskdef-updated.json \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
+          aws ecs update-service \
+            --cluster "${{ steps.infra.outputs.cluster_name }}" \
+            --service "${{ steps.infra.outputs.service_name }}" \
+            --task-definition "$NEW_TASK_DEF_ARN"

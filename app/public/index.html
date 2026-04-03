@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AWS Web App Platform</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #132238;
+        --accent: #0f766e;
+        --wash: #edf7f6;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top right, #c7f9e8, transparent 30%),
+          linear-gradient(180deg, #f8fbff 0%, #eef7fb 100%);
+        color: var(--ink);
+      }
+
+      main {
+        max-width: 760px;
+        margin: 8rem auto;
+        padding: 2rem;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(15, 118, 110, 0.15);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 24px 50px rgba(19, 34, 56, 0.08);
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 7vw, 4.2rem);
+        line-height: 1;
+        margin: 0 0 1rem;
+      }
+
+      p {
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      code {
+        background: var(--wash);
+        padding: 0.2rem 0.4rem;
+        border-radius: 6px;
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>Platform Ready</h1>
+        <p>
+          This sample container is deployed by GitHub Actions into
+          <code>ECS Fargate</code> behind an <code>Application Load Balancer</code>.
+        </p>
+        <p>
+          Replace the contents of <code>app/</code> with your real application when
+          you're ready.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+name: terraform
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, prod]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.0
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TERRAFORM }}
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: >
+          terraform -chdir=terraform/envs/${{ matrix.environment }} init
+          -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+          -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
+          -backend-config="region=${{ vars.AWS_REGION }}"
+          -backend-config="key=${{ matrix.environment }}/terraform.tfstate"
+
+      - name: Terraform validate
+        run: terraform -chdir=terraform/envs/${{ matrix.environment }} validate
+
+      - name: Terraform plan
+        run: >
+          terraform -chdir=terraform/envs/${{ matrix.environment }} plan
+          -input=false
+          -no-color
+
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - environment: dev
+            github_environment: dev
+          - environment: prod
+            github_environment: prod
+    environment: ${{ matrix.github_environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.0
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TERRAFORM }}
+
+      - name: Terraform init
+        run: >
+          terraform -chdir=terraform/envs/${{ matrix.environment }} init
+          -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+          -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
+          -backend-config="region=${{ vars.AWS_REGION }}"
+          -backend-config="key=${{ matrix.environment }}/terraform.tfstate"
+
+      - name: Terraform apply
+        run: >
+          terraform -chdir=terraform/envs/${{ matrix.environment }} apply
+          -input=false
+          -auto-approve
+
