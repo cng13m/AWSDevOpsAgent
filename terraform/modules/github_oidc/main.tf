@@ -122,6 +122,44 @@ resource "aws_iam_role_policy" "terraform_iam" {
   })
 }
 
+resource "aws_iam_role_policy" "terraform_backend" {
+  name = "${var.project_name}-${var.environment}-gha-terraform-backend"
+  role = aws_iam_role.terraform.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = "arn:aws:s3:::${var.terraform_state_bucket_name}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = "arn:aws:s3:::${var.terraform_state_bucket_name}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeTable",
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:*:*:table/${var.terraform_lock_table_name}"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy" "deploy" {
   name = "${var.project_name}-${var.environment}-gha-deploy"
   role = aws_iam_role.deploy.id
@@ -129,6 +167,28 @@ resource "aws_iam_role_policy" "deploy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = "arn:aws:s3:::${var.terraform_state_bucket_name}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ]
+        Resource = "arn:aws:s3:::${var.terraform_state_bucket_name}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeTable"
+        ]
+        Resource = "arn:aws:dynamodb:*:*:table/${var.terraform_lock_table_name}"
+      },
       {
         Effect   = "Allow"
         Action   = ["ecr:GetAuthorizationToken"]
@@ -182,25 +242,44 @@ resource "aws_iam_role_policy" "readonly_extra" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "logs:DescribeLogGroups",
-        "logs:DescribeLogStreams",
-        "logs:GetLogEvents",
-        "logs:FilterLogEvents",
-        "cloudwatch:GetDashboard",
-        "cloudwatch:ListDashboards",
-        "s3:ListBucket",
-        "s3:GetObject",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:Query",
-        "ssm:GetParameter",
-        "ssm:GetParameters",
-        "secretsmanager:DescribeSecret"
-      ]
-      Resource = "*"
-    }]
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = "arn:aws:s3:::${var.terraform_state_bucket_name}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ]
+        Resource = "arn:aws:s3:::${var.terraform_state_bucket_name}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeTable"
+        ]
+        Resource = "arn:aws:dynamodb:*:*:table/${var.terraform_lock_table_name}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents",
+          "cloudwatch:GetDashboard",
+          "cloudwatch:ListDashboards",
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "*"
+      }
+    ]
   })
 }

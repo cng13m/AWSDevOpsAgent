@@ -127,12 +127,14 @@ module "observability" {
 module "github_oidc" {
   source = "../../modules/github_oidc"
 
-  project_name            = var.project_name
-  environment             = var.environment
-  github_org              = var.github_org
-  github_repo             = var.github_repo
-  github_default_branch   = var.github_default_branch
-  task_execution_role_arn = module.ecs_service.task_execution_role_arn
-  task_role_arn           = module.ecs_service.task_role_arn
-  common_tags             = local.common_tags
+  project_name                = var.project_name
+  environment                 = var.environment
+  github_org                  = var.github_org
+  github_repo                 = var.github_repo
+  github_default_branch       = var.github_default_branch
+  terraform_state_bucket_name = var.terraform_state_bucket_name
+  terraform_lock_table_name   = var.terraform_lock_table_name
+  task_execution_role_arn     = module.ecs_service.task_execution_role_arn
+  task_role_arn               = module.ecs_service.task_role_arn
+  common_tags                 = local.common_tags
 }
