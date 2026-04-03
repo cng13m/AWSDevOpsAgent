@@ -18,6 +18,7 @@ Terraform scaffold for a production-ready baseline AWS environment to host a con
 app/                       Minimal sample web app container
 docs/                      Runbooks and operator notes
 terraform/bootstrap/       One-time state backend bootstrap
+terraform/devops-agent/    Separate AWS DevOps Agent onboarding stack
 terraform/envs/dev/        Dev environment root stack
 terraform/modules/         Reusable Terraform modules
 ```
@@ -35,6 +36,7 @@ terraform/modules/         Reusable Terraform modules
    - `terraform -chdir=terraform/envs/dev init -backend-config="bucket=..." -backend-config="dynamodb_table=..." -backend-config="region=..." -backend-config="key=dev/terraform.tfstate"`
    - `terraform -chdir=terraform/envs/dev apply`
 5. Configure GitHub repository variables and secrets described in [docs/runbook.md](docs/runbook.md).
+6. Optionally deploy AWS DevOps Agent onboarding using [docs/devops-agent.md](docs/devops-agent.md).
 
 ## Notes
 
